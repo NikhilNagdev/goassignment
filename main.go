@@ -4,15 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 	"goassignment/database/controller"
 	"goassignment/database/model"
 	"goassignment/io"
-	"log"
 	"net/http"
 	"strconv"
 )
 
 var users []model.User
+var log = logrus.New()
 
 func CovertCSVToModel(fileName string) []model.User {
 	userRecords := io.GetRecordsFromCSVReader(
@@ -33,9 +34,9 @@ func CovertCSVToModel(fileName string) []model.User {
 	return users
 }
 
-func GetUsers(w http.ResponseWriter, r *http.Request)  {
+func GetUsers(w http.ResponseWriter, r *http.Request) {
 	var users []model.User
-	controller.GetUsers(&users)
+	controller.GetUsers(&users, log)
 	jsonStr, _ := json.Marshal(users)
 	_, err := fmt.Fprintln(w, string(jsonStr))
 	if err != nil {
@@ -43,10 +44,10 @@ func GetUsers(w http.ResponseWriter, r *http.Request)  {
 	}
 }
 
-func CreateUsers(w http.ResponseWriter, r *http.Request)  {
-	users := CovertCSVToModel( r.URL.Query().Get("filename"))
+func CreateUsers(w http.ResponseWriter, r *http.Request) {
+	users := CovertCSVToModel(r.URL.Query().Get("filename"))
 	for i := 0; i < len(users); i++ {
-		controller.CreateUser(&users[i])
+		controller.CreateUser(&users[i], log)
 	}
 }
 

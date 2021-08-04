@@ -1,23 +1,21 @@
 package controller
 
 import (
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"goassignment/database"
 	"goassignment/database/model"
-	log "github.com/sirupsen/logrus"
 )
 
-func CreateUser(user *model.User)  {
-	err := database.GetDbConnection().Create(user).Error
-	if err != nil{
-		log.SetFormatter(&log.JSONFormatter{})
-    	log.Error("An error occured!")
+func CreateUser(user *model.User, log *logrus.Logger) {
+	err := database.GetDbConnection(log).Create(user).Error
+	if err != nil {
+		log.Error(err)
 	}
 }
 
-func GetUsers(users *[]model.User)  {
-	err := database.GetDbConnection().Find(&users).Error
+func GetUsers(users *[]model.User, log *logrus.Logger) {
+	err := database.GetDbConnection(log).Find(&users).Error
 	if err != nil {
-		fmt.Println(err)
+		log.Error(err)
 	}
 }

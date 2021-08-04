@@ -1,7 +1,7 @@
 package database
 
 import (
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -14,20 +14,19 @@ const DB_PORT = "3306"
 
 var db *gorm.DB
 
-func GetDbConnection() *gorm.DB {
-	db = connectDB()
+func GetDbConnection(log *logrus.Logger) *gorm.DB {
+	db = connectDB(log)
 	return db
 }
 
-func connectDB() (*gorm.DB) {
+func connectDB(log *logrus.Logger) *gorm.DB {
 	var err error
-	dsn := DB_USERNAME +":"+ DB_PASSWORD +"@tcp"+ "(" + DB_HOST + ":" + DB_PORT +")/" + DB_NAME + "?" + "parseTime=true&loc=Local"
+	dsn := DB_USERNAME + ":" + DB_PASSWORD + "@tcp" + "(" + DB_HOST + ":" + DB_PORT + ")/" + DB_NAME + "?" + "parseTime=true&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.SetFormatter(&log.JSONFormatter{})
-    	log.Error(err)
+		log.Fatal("Error Connecting to Database ", err)
 		return nil
 	}
 	//fmt.Println("Connected to DB")
- 	return db
+	return db
 }
